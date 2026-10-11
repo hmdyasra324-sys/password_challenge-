@@ -1,0 +1,111 @@
+-container">
+        <h1>لعبة كلمة السر</h1>
+        <div class="stage-title" id="stage-indicator">المرحلة 1</div>
+        <div class="question" id="question-text">جاري تحميل السؤال...</div>
+        <input type="text" id="user-answer" placeholder="اكتب الإجابة هنا...">
+        <br>
+        <button onclick="checkAnswer()">تحقق من الإجابة</button>
+        <div class="message" id="message"></div>
+        <div class="score" id="score-text">النقاط: 0</div>
+    </div>
+
+    <script>
+        // مصفوفة تحتوي على المراحل والأسئلة مقسمة
+        const stagesData = [
+            // المرحلة الأولى: فواكه وخضروات
+            [
+                { q: "فواكه: عصير لونه أحمر وبذوره صغيرة؟", a: "رمان" },
+                { q: "من أشهى الفواكه الصيفية لونه أحمر من الداخل وأخضر من الخارج؟", a: "بطيخ" },
+                { q: "فاكهة صفراء يفضلها القردة؟", a: "موز" },
+                { q: "فاكهة حمراء صغيرة ولذيذة تُزرع على الأرض؟", a: "فراولة" },
+                { q: "نوع حمضيات مفيد جداً للبرد وغني بفيتامين سي؟", a: "برتقال" }
+            ],
+            // المرحلة الثانية: بلاد وعواصم
+            [
+                { q: "عاصمة عربية تُسمى أم الدنيا؟", a: "القاهرة" },
+                { q: "دولة عربية عاصمتها الرياض؟", a: "السعودية" },
+                { q: "دولة عربية عاصمتها أبوظبي؟", a: "الإمارات" },
+                { q: "عاصمة فرنسا؟", a: "باريس" },
+                { q: "دولة أهرامات التاريخ العريق؟", a: "مصر" }
+            ],
+            // المرحلة الثالثة: حيوانات الغابة
+            [
+                { q: "حيوان غابوي يُلقب بملك الغابة؟", a: "أسد" },
+                { q: "أطول حيوان في العالم برقبتها الطويلة؟", a: "زرافة" },
+                { q: "أضخم حيوان بري على وجه الأرض؟", a: "فيل" },
+                { q: "حيوان سريع جداً من فصيلة السنوريات وله بقع سوداء؟", a: "فهد" },
+                { q: "حيوان مفترس يشبه القطط الكبيرة ويعيش في الغابات؟", a: "نمر" }
+            ],
+            // المرحلة الرابعة: معلومات اسلامية ودينية
+            [
+                { q: "شهر عربي يأتي بعد رمضان؟", a: "شوال" },
+                { q: "كم عدد سور القرآن الكريم؟", a: "114" },
+                { q: "الصلاة التي تُصلى بدون ركوع أو سجود؟", a: "صلاة الجنازة" },
+                { q: "أول خلفاء الراشدين؟", a: "أبو بكر الصديق" },
+                { q: "اسم السورة التي تسمى قلب القرآن؟", a: "يس" }
+            ],
+            // المرحلة الخامسة: جماد وأشياء عامة
+            [
+                { q: "جماد: نستخدمه لفتح الأبواب؟", a: "مفتاح" },
+                { q: "شيء نستخدمه لمعرفة الوقت ونرتديه في المعصم؟", a: "ساعة" },
+                { q: "جهاز ذكي نمسكه في أيدينا طوال اليوم؟", a: "موبايل" },
+                { q: "وسيلة مواصلات تسير على القضبان حديدية؟", a: "قطار" },
+                { q: "أداة نستخدمها للكتابة على الورق؟", a: "قلم" }
+            ]
+        ];
+
+        let currentStageIndex = 0;
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const stageIndicator = document.getElementById("stage-indicator");
+        const questionText = document.getElementById("question-text");
+        const userAnswer = document.getElementById("user-answer");
+        const message = document.getElementById("message");
+        const scoreText = document.getElementById("score-text");
+
+        function loadQuestion() {
+            if (currentStageIndex < stagesData.length) {
+                let currentStage = stagesData[currentStageIndex];
+                if (currentQuestionIndex < currentStage.length) {
+                    stageIndicator.textContent = `المرحلة ${currentStageIndex + 1} - السؤال ${currentQuestionIndex + 1}`;
+                    questionText.textContent = currentStage[currentQuestionIndex].q;
+                    userAnswer.value = "";
+                    message.textContent = "";
+                } else {
+                    // الانتقال للمرحلة التالية
+                    currentStageIndex++;
+                    currentQuestionIndex = 0;
+                    loadQuestion();
+                }
+            } else {
+                stageIndicator.textContent = "🏆 النهاية";
+                questionText.textContent = "🎉 مبروك يا بطل! أنهيت جميع المراحل بنجاح!";
+                userAnswer.style.display = "none";
+                document.querySelector("button").style.display = "none";
+                message.textContent = "";
+            }
+        }
+
+        function checkAnswer() {
+            let userVal = userAnswer.value.trim();
+            let correctAnswer = stagesData[currentStageIndex][currentQuestionIndex].a;
+
+            if (userVal === correctAnswer) {
+                message.style.color = "#00ffcc";
+                message.textContent = "إجابة صحيحة! بطل 👏";
+                score += 10;
+                scoreText.textContent = "النقاط: " + score;
+                currentQuestionIndex++;
+                setTimeout(loadQuestion, 1200);
+            } else {
+                message.style.color = "#ff4d4d";
+                message.textContent = "إجابة خطأ، جرب تاني!";
+            }
+        }
+
+        loadQuestion();
+    </script>
+
+</body>
+</html>
